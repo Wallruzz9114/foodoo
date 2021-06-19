@@ -35,8 +35,8 @@ class AuthAPI implements IAuthService {
   }
 
   @override
-  Future<void> signOut() async {
-    throw UnimplementedError();
+  Future<Result<bool>> signOut(Token token) async {
+    return _api.signOut(token);
   }
 
   @override
