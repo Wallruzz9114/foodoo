@@ -15,7 +15,7 @@ describe('SignInUseCase', () => {
   let passwordService: IPasswordService;
 
   const user = {
-    id: 3278543,
+    id: '3278543',
     username: 'test_user123',
     email: 'test@user.com',
     password: 'LGDWIh9uergtu4eofgwc3pr8g03w8ty07ouwegf723940tr3owge',
@@ -30,7 +30,7 @@ describe('SignInUseCase', () => {
   it('should throw error when user is not found', async () => {
     const wrongUser = { email: 'wrongemail@test.com', password: '67828hafuo' };
     await expect(useCase.execute(wrongUser.email, wrongUser.password)).to.be.rejectedWith(
-      'User not found'
+      'Invalid email or password'
     );
   });
 

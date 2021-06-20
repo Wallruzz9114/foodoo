@@ -1,4 +1,4 @@
-import IPasswordService from 'src/auth/services/iPasswordService';
+import IPasswordService from '../../../auth/services/iPasswordService';
 
 export default class FakePasswordService implements IPasswordService {
   public async hash(password: string): Promise<string> {

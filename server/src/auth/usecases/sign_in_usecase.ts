@@ -8,9 +8,9 @@ export default class SignInUseCase {
     if (this.passwordIsValid(password)) {
       const user = await this.authRepository.find(email);
       if (!(await this.passwordService.compare(password, user.password))) {
-        return Promise.reject('User not found');
+        return Promise.reject('Invalid email or password');
       }
-      return user.id.toString();
+      return user.id;
     }
     return 'Error while signing in.';
   }
