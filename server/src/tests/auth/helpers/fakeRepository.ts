@@ -29,6 +29,6 @@ export default class FakeRepository implements IAuthRepository {
       password: password,
     });
 
-    return id.toString();
+    return id;
   }
 }

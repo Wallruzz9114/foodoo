@@ -4,10 +4,10 @@ import User from '../../../models/user';
 import { UserModel, UserSchema } from './../models/userModel';
 
 export default class AuthRepository implements IAuthRepository {
-  constructor(private readonly client: Mongoose) {}
+  public constructor(private readonly _client: Mongoose) {}
 
   public async find(email: string): Promise<User> {
-    const users = this.client.model<UserModel>('user', UserSchema);
+    const users = this._client.model<UserModel>('user', UserSchema);
     const user = await users.findOne({ email: email });
     if (!user) return Promise.reject('Invalid email or password');
 
@@ -15,7 +15,7 @@ export default class AuthRepository implements IAuthRepository {
   }
 
   public async add(username: string, email: string, passwordHash: string): Promise<string> {
-    const userModel = this.client.model<UserModel>('user', UserSchema);
+    const userModel = this._client.model<UserModel>('user', UserSchema);
     const newUser = await userModel.create({
       username: username,
       email: email,
