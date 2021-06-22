@@ -19,5 +19,7 @@ class AuthService {
     return _authService.signUp(username, email, password);
   }
 
-  Future<void> signOut() async {}
+  Future<Result<bool>> signOut(Token token) async {
+    return _authService.signOut(token);
+  }
 }

@@ -1,11 +1,11 @@
 class Credentials {
   Credentials({
     this.username,
-    required this.email,
+    this.email,
     required this.password,
   });
 
   String? username;
-  final String email;
+  String? email;
   final String password;
 }

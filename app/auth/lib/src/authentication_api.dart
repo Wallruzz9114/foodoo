@@ -28,7 +28,7 @@ class AuthenticationAPI implements IAuthAPI {
 
   @override
   Future<Result<bool>> signOut(Token token) async {
-    final Uri url = Uri(path: '$baseUrl/auth/signout');
+    final Uri url = Uri.parse('$baseUrl/auth/signout');
     final Map<String, String> headers = <String, String>{
       'Content-type': 'application/json',
       'Authorization': token.value
@@ -46,10 +46,11 @@ class AuthenticationAPI implements IAuthAPI {
     String endpoint,
     Credentials credential,
   ) async {
-    final Uri uri = Uri(path: endpoint);
+    final Uri uri = Uri.parse(endpoint);
     final http.Response response = await _client.post(
       uri,
-      body: Mapper.toJson(credential),
+      body: jsonEncode(Mapper.toJson(credential)),
+      headers: <String, String>{'Content-Type': 'application/json'},
     );
 
     if (response.statusCode != 200) {
