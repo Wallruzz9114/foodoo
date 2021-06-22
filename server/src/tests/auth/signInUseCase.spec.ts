@@ -3,15 +3,15 @@ import chaiAsPromised from 'chai-as-promised';
 import 'mocha';
 import IAuthRepository from '../../auth/repositories/iAuthRepository';
 import IPasswordService from '../../auth/services/iPasswordService';
-import SignInUseCase from '../../auth/usecases/sign_in_usecase';
+import SignInUsecase from '../../auth/usecases/signInUsecase';
 import FakePasswordService from './helpers/fakePasswordService';
 import FakeRepository from './helpers/fakeRepository';
 
 chai.use(chaiAsPromised);
 
-describe('SignInUseCase', () => {
-  let useCase: SignInUseCase;
-  let repository: IAuthRepository;
+describe('SignInUsecase', () => {
+  let useCase: SignInUsecase;
+  let authRepository: IAuthRepository;
   let passwordService: IPasswordService;
 
   const user = {
@@ -22,9 +22,9 @@ describe('SignInUseCase', () => {
   };
 
   beforeEach(() => {
-    repository = new FakeRepository();
+    authRepository = new FakeRepository();
     passwordService = new FakePasswordService();
-    useCase = new SignInUseCase(repository, passwordService);
+    useCase = new SignInUsecase(authRepository, passwordService);
   });
 
   it('should throw error when user is not found', async () => {

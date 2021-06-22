@@ -4,6 +4,13 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/src/server.ts"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Debug Mocha tests",
       "cwd": "${workspaceRoot}",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
