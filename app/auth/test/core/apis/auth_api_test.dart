@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:auth/src/authentication_api.dart';
-import 'package:auth/src/models/objects/credentials.dart';
+import 'package:auth/src/models/objects/sign_in_credentials.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
@@ -21,8 +21,8 @@ void main() {
   });
 
   group('signin', () {
-    final Credentials credentials = Credentials(
-      email: 'email@email',
+    final SignInCredentials credentials = SignInCredentials(
+      username: 'testuser',
       password: 'pass',
     );
 

@@ -4,7 +4,8 @@ import 'package:async/async.dart';
 
 import 'package:auth/src/core/adapters/i_auth_api.dart';
 import 'package:auth/src/core/apis/mapper.dart';
-import 'package:auth/src/models/objects/credentials.dart';
+import 'package:auth/src/models/objects/sign_in_credentials.dart';
+import 'package:auth/src/models/objects/sign_up_credentials.dart';
 import 'package:auth/src/models/objects/token.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,13 +16,13 @@ class AuthenticationAPI implements IAuthAPI {
   String baseUrl;
 
   @override
-  Future<Result<String>> signIn(Credentials credentials) async {
+  Future<Result<String>> signIn(SignInCredentials credentials) async {
     final String endpoint = '$baseUrl/auth/signin';
     return _postCredential(endpoint, credentials);
   }
 
   @override
-  Future<Result<String>> signUp(Credentials credentials) async {
+  Future<Result<String>> signUp(SignUpCredentials credentials) async {
     final String endpoint = '$baseUrl/auth/signup';
     return _postCredential(endpoint, credentials);
   }
@@ -44,17 +45,19 @@ class AuthenticationAPI implements IAuthAPI {
 
   Future<Result<String>> _postCredential(
     String endpoint,
-    Credentials credential,
+    dynamic credentials,
   ) async {
     final Uri uri = Uri.parse(endpoint);
     final http.Response response = await _client.post(
       uri,
-      body: jsonEncode(Mapper.toJson(credential)),
+      body: jsonEncode(Mapper.toJson(credentials)),
       headers: <String, String>{'Content-Type': 'application/json'},
     );
 
     if (response.statusCode != 200) {
-      return Result<String>.error('Server error');
+      final Map<String, dynamic> map =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      return Result<String>.error(_mapError(map));
     }
 
     final Map<String, dynamic> json =
@@ -67,5 +70,19 @@ class AuthenticationAPI implements IAuthAPI {
     return json['auth_token'] != null
         ? Result<String>.value(json['auth_token'] as String)
         : Result<String>.error(json['message'] as String);
+  }
+
+  String _mapError(Map<String, dynamic> map) {
+    final dynamic contents =
+        map['error'] as dynamic ?? map['errors'] as dynamic;
+    if (contents is String) {
+      return contents;
+    }
+    final dynamic errorString = contents.fold(
+      '',
+      (dynamic prev, dynamic el) => '$prev${el.values.first}\n',
+    );
+
+    return errorString.toString().trim();
   }
 }

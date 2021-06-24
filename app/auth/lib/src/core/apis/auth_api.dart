@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:auth/src/core/adapters/i_auth_api.dart';
-import 'package:auth/src/models/objects/credentials.dart';
+import 'package:auth/src/models/objects/sign_in_credentials.dart';
+import 'package:auth/src/models/objects/sign_up_credentials.dart';
 import 'package:auth/src/models/objects/token.dart';
 import 'package:auth/src/services/interfaces/i_auth_service_.dart';
 
@@ -8,24 +9,22 @@ class AuthAPI implements IAuthService {
   AuthAPI(this._api);
 
   final IAuthAPI _api;
-  late Credentials _credentials;
+  late SignInCredentials _signInCredentials;
 
-  void createCredentials({
-    String? username,
-    required String email,
+  void createSignInSignUpCredentials({
+    required String username,
     required String password,
   }) {
-    _credentials = Credentials(
+    _signInCredentials = SignInCredentials(
       username: username,
-      email: email,
       password: password,
     );
   }
 
   @override
   Future<Result<Token>> signIn() async {
-    assert(_credentials != null);
-    final Result<String> result = await _api.signIn(_credentials);
+    assert(_signInCredentials != null);
+    final Result<String> result = await _api.signIn(_signInCredentials);
 
     if (result.isError) {
       return result.asError! as Future<Result<Token>>;
@@ -45,7 +44,7 @@ class AuthAPI implements IAuthService {
     String email,
     String password,
   ) async {
-    final Credentials credentials = Credentials(
+    final SignUpCredentials credentials = SignUpCredentials(
       username: username,
       email: email,
       password: password,

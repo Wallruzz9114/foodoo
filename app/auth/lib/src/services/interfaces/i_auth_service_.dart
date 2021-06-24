@@ -1,8 +1,7 @@
-import 'package:async/async.dart';
 import 'package:auth/src/models/objects/token.dart';
 
 abstract class IAuthService {
-  Future<Result<Token>> signUp(String username, String email, String password);
-  Future<Result<Token>> signIn();
-  Future<Result<bool>> signOut(Token token);
+  Future<dynamic> signUp(String username, String email, String password);
+  Future<dynamic> signIn();
+  Future<dynamic> signOut(Token token);
 }

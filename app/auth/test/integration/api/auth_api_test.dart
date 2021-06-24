@@ -1,6 +1,7 @@
 import 'package:async/src/result/result.dart';
 import 'package:auth/src/authentication_api.dart';
-import 'package:auth/src/models/objects/credentials.dart';
+import 'package:auth/src/models/objects/sign_in_credentials.dart';
+import 'package:auth/src/models/objects/sign_up_credentials.dart';
 import 'package:auth/src/models/objects/token.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -15,13 +16,13 @@ void main() {
     api = AuthenticationAPI(baseUrl, client);
   });
 
-  final Credentials signUpcredentials = Credentials(
+  final SignUpCredentials signUpcredentials = SignUpCredentials(
     username: 'sdgfreigne',
     email: 'oghuwr@email.com',
     password: 'P@ssw0rd123!',
   );
 
-  final Credentials signIncredentials = Credentials(
+  final SignInCredentials signIncredentials = SignInCredentials(
     username: 'sdgfreigne',
     password: 'P@ssw0rd123!',
   );

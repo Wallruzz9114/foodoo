@@ -19,6 +19,9 @@ dependencies:
   flutter_bloc: ^7.0.0
   equatable: ^2.0.3
   mockito: ^5.0.10
+  flutter_svg: ^0.22.0
+  google_fonts: ^2.1.0
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +29,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/

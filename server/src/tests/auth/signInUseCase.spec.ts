@@ -30,7 +30,7 @@ describe('SignInUsecase', () => {
   it('should throw error when user is not found', async () => {
     const wrongUser = { email: 'wrongemail@test.com', password: '67828hafuo' };
     await expect(useCase.execute(wrongUser.email, wrongUser.password)).to.be.rejectedWith(
-      'Invalid email or password'
+      'Invalid username or password'
     );
   });
 

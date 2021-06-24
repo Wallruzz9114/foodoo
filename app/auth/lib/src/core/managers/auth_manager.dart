@@ -14,7 +14,7 @@ class AuthManager {
     required String password,
   }) {
     final AuthService authAPI = AuthService(_authAPI);
-    authAPI.setSignInCredentials(username: username, password: password);
+    authAPI.setSignInSignUpCredentials(username: username, password: password);
     return authAPI;
   }
 }

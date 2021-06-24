@@ -12,7 +12,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signUp(IAuthService authService, User user) async {
     _startLoading();
-    final Result<Token> result = await authService.signUp(
+    final dynamic result = await authService.signUp(
       user.username,
       user.email,
       user.password,
@@ -22,18 +22,20 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signIn(IAuthService authService) async {
     _startLoading();
-    final Result<Token> result = await authService.signIn();
+    final dynamic result = await authService.signIn();
     _setResultOfAuthState(result);
   }
 
   Future<void> signOut(IAuthService authService) async {
     _startLoading();
     final Token token = await localStore.fetch();
-    final Result<bool> result = await authService.signOut(token);
+    final dynamic result = await authService.signOut(token);
 
-    if (result.asValue!.value) {
-      localStore.delete(token);
-      emit(SignOutSuccessState());
+    if (result is Result<bool>) {
+      if (result.asValue!.value) {
+        localStore.delete(token);
+        emit(SignOutSuccessState());
+      }
     } else {
       emit(AuthErrorState('Error signing out'));
     }
@@ -43,11 +45,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoadingState());
   }
 
-  void _setResultOfAuthState(Result<Token> result) {
+  void _setResultOfAuthState(dynamic result) {
     if (result.asError != null) {
       emit(AuthErrorState(result.asError!.error as String));
       return;
     }
-    emit(AuthErrorState(result.asValue!.value as String));
+    emit(AuthSuccessState(result.asValue!.value as Token));
   }
 }

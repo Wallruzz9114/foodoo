@@ -13,7 +13,7 @@ export default class FakeRepository implements IAuthRepository {
 
   public async find(email: string): Promise<User> {
     const user = this.users.find((x) => x.email === email);
-    if (!user) return Promise.reject('Invalid email or password');
+    if (!user) return Promise.reject('Invalid email');
     return new User(user?.id, user?.username, user?.email, user?.password);
   }
 

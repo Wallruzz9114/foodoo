@@ -10,7 +10,7 @@ export default class SignInUsecase {
   public async execute(username: string, password: string): Promise<string> {
     const user = await this._authRepository.find(username).catch((_) => null);
     if (!user || !(await this._passwordService.compare(password, user.password)))
-      return Promise.reject('Invalid email or password');
+      return Promise.reject('Invalid username or password');
 
     return user.id;
   }
