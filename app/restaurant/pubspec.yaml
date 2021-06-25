@@ -1,5 +1,5 @@
-name: auth
-description: Auth module.
+name: restaurant
+description: Restaurant module.
 version: 0.0.1
 
 environment:

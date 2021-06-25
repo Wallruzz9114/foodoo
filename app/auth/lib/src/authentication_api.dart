@@ -18,13 +18,13 @@ class AuthenticationAPI implements IAuthAPI {
   @override
   Future<Result<String>> signIn(SignInCredentials credentials) async {
     final String endpoint = '$baseUrl/auth/signin';
-    return _postCredential(endpoint, credentials);
+    return _submitRequest(endpoint, credentials);
   }
 
   @override
   Future<Result<String>> signUp(SignUpCredentials credentials) async {
     final String endpoint = '$baseUrl/auth/signup';
-    return _postCredential(endpoint, credentials);
+    return _submitRequest(endpoint, credentials);
   }
 
   @override
@@ -43,7 +43,7 @@ class AuthenticationAPI implements IAuthAPI {
     return Result<bool>.value(true);
   }
 
-  Future<Result<String>> _postCredential(
+  Future<Result<String>> _submitRequest(
     String endpoint,
     dynamic credentials,
   ) async {

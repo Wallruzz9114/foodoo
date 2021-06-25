@@ -43,6 +43,7 @@ analyzer:
       # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
     - "auth/test/core/apis/auth_api_test.mocks.dart"
+    - "restaurant/test/core/apis/restaurant_api_test.mocks.dart"
 
 linter:
   rules:
