@@ -1,64 +1,84 @@
 import 'dart:convert';
 
+import 'package:common/common.dart';
+import 'package:common/models/http_result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:restaurant/src/models/location.dart';
+import 'package:restaurant/src/models/paged_result.dart';
 import 'package:restaurant/src/restaurant_api.dart';
 
 import 'restaurant_api_test.mocks.dart';
 
-@GenerateMocks(<Type>[http.Client])
+@GenerateMocks(<Type>[IHttpClient, http.Client])
 void main() {
-  late MockClient client;
+  late MockIHttpClient client;
   late RestaurantAPI api;
 
   setUp(() {
-    client = MockClient();
+    client = MockIHttpClient();
     api = RestaurantAPI(client: client, baseUrl: 'http:baseUrl');
   });
 
   group('getAllRestaurants', () {
     test('returns an empty list when no restaurants are found', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(
-              <String, dynamic>{'restaurants': <Map<String, dynamic>>[]}),
-          200));
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+            data: jsonEncode(<String, dynamic>{
+              'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+              'restaurants': <dynamic>[]
+            }),
+            status: Status.success),
+      );
 
-      final dynamic results = await api.getAllRestaurants(page: 1);
-      expect(results, <Map<String, dynamic>>[]);
+      final dynamic results = await api.getAllRestaurants(page: 1, pageSize: 2);
+      expect((results as PagedResult).restaurants, <dynamic>[]);
     });
 
     test('returns an empty list when response status is not 200', () async {
-      when(client.get(any)).thenAnswer(
-          (_) async => http.Response(jsonEncode(<String, dynamic>{}), 401));
-      final dynamic results = await api.getAllRestaurants(page: 1);
-      expect(results, <Map<String, dynamic>>[]);
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(<String, dynamic>{}),
+          status: Status.failure,
+        ),
+      );
+
+      final dynamic results = await api.getAllRestaurants(page: 1, pageSize: 2);
+      expect(results, isNull);
     });
 
     test('returns a list of restaurants (successful request)', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'restaurants': _restaurantsJson()}),
-          200));
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(_restaurantsJson()),
+          status: Status.success,
+        ),
+      );
 
-      final dynamic results = await api.getAllRestaurants(page: 1);
-      expect(results, isNotEmpty);
+      final dynamic results = await api.getAllRestaurants(page: 1, pageSize: 2);
+      expect((results as PagedResult).restaurants.length, 2);
     });
   });
 
   group('getRestaurant', () {
     test('returns null when the restaurant is not found', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, String>{'error': 'restaurant not found'}), 404));
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(<String, String>{'error': 'restaurant not found'}),
+          status: Status.failure,
+        ),
+      );
 
       final dynamic result = await api.getRestaurant(restaurantId: '1234');
       expect(result, null);
     });
 
     test('return restaurant when correct id is provided', () async {
-      when(client.get(any)).thenAnswer(
-          (_) async => http.Response(jsonEncode(_restaurantsJson()[0]), 200));
+      when(client.get(any, null)).thenAnswer((_) async => HttpResult(
+          data: jsonEncode(_restaurantsJson()['restaurants'][0]),
+          status: Status.success));
 
       final dynamic result = await api.getRestaurant(restaurantId: '12345');
 
@@ -69,61 +89,86 @@ void main() {
 
   group('getRestaurantsByLocation', () {
     test('returns an empty list when no restaurants are found', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'restaurants': <dynamic>[]}), 200));
+      when(client.get(any, null)).thenAnswer((_) async => HttpResult(
+          data: jsonEncode(<String, dynamic>{
+            'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+            'restaurants': <dynamic>[]
+          }),
+          status: Status.success));
       final dynamic results = await api.getRestaurantsByLocation(
         page: 1,
+        pageSize: 2,
         location: const Location(longitude: 1233, latitude: 12.45),
       );
-      expect(results, <dynamic>[]);
+
+      expect((results as PagedResult).restaurants, <dynamic>[]);
     });
 
     test('returns list of restaurants when success', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'restaurants': _restaurantsJson()}),
-          200));
+      when(client.get(any, null)).thenAnswer((_) async => HttpResult(
+          data: jsonEncode(_restaurantsJson()), status: Status.success));
       final dynamic results = await api.getRestaurantsByLocation(
         page: 1,
+        pageSize: 2,
         location: const Location(longitude: 1233, latitude: 12.45),
       );
 
-      expect(results, isNotEmpty);
-      expect(results.length, 2);
+      expect((results as PagedResult).restaurants.length, 2);
     });
   });
 
   group('findRestaurants', () {
     test('returns an empty list when no restaurants are found', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'restaurants': <dynamic>[]}), 200));
-      final dynamic results =
-          await api.findRestaurants(page: 1, searchTerm: 'yucayic');
-      expect(results, <dynamic>[]);
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(<String, dynamic>{
+            'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+            'restaurants': <dynamic>[]
+          }),
+          status: Status.success,
+        ),
+      );
+
+      final dynamic results = await api.findRestaurants(
+          page: 1, pageSize: 2, searchTerm: 'yucayic');
+      expect((results as PagedResult).restaurants, <dynamic>[]);
     });
 
     test('returns list of restaurants when success', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'restaurants': _restaurantsJson()}),
-          200));
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(_restaurantsJson()),
+          status: Status.success,
+        ),
+      );
+
       final dynamic results =
-          await api.findRestaurants(page: 1, searchTerm: 'tdud');
-      expect(results, isNotEmpty);
-      expect(results.length, 2);
+          await api.findRestaurants(page: 1, pageSize: 2, searchTerm: 'tdud');
+
+      expect((results as PagedResult).restaurants.length, 2);
     });
   });
 
   group('getRestaurantMenu', () {
     test('returns empty list when no menu is found', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'menu': <dynamic>[]}), 404));
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(<String, dynamic>{'menu': <dynamic>[]}),
+          status: Status.failure,
+        ),
+      );
       final dynamic result =
           await api.getMenuForRestaurant(restaurantId: '12345');
       expect(result, <dynamic>[]);
     });
 
     test('returns restaurant menu when success', () async {
-      when(client.get(any)).thenAnswer((_) async => http.Response(
-          jsonEncode(<String, dynamic>{'menu': _restaurantMenuJson()}), 200));
+      when(client.get(any, null)).thenAnswer(
+        (_) async => HttpResult(
+          data: jsonEncode(<String, dynamic>{'menu': _restaurantMenuJson()}),
+          status: Status.success,
+        ),
+      );
 
       final dynamic result =
           await api.getMenuForRestaurant(restaurantId: '12345');
@@ -136,34 +181,37 @@ void main() {
 }
 
 dynamic _restaurantsJson() {
-  return <Map<String, dynamic>>[
-    <String, dynamic>{
-      'id': '12345',
-      'name': 'Restuarant Name',
-      'type': 'Fast Food',
-      'image_url': 'restaurant.jpg',
-      'location': <String, double>{'longitude': 345.33, 'latitude': 345.23},
-      'address': <String, String>{
-        'street': 'Road 1',
-        'city': 'Vancouver',
-        'province': 'BC',
-        'country': 'Canada'
+  return <String, dynamic>{
+    'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+    'restaurants': <Map<String, dynamic>>[
+      <String, dynamic>{
+        'id': '12345',
+        'name': 'Restuarant Name',
+        'type': 'Fast Food',
+        'image_url': 'restaurant.jpg',
+        'location': <String, double>{'longitude': 345.33, 'latitude': 345.23},
+        'address': <String, String>{
+          'street': 'Road 1',
+          'city': 'Vancouver',
+          'province': 'BC',
+          'country': 'Canada'
+        }
+      },
+      <String, dynamic>{
+        'id': '12666',
+        'name': 'Restuarant Name',
+        'type': 'Fast Food',
+        'image_url': 'restaurant.jpg',
+        'location': <String, double>{'longitude': 345.33, 'latitude': 345.23},
+        'address': <String, String>{
+          'street': 'Road 1',
+          'city': 'Toronto',
+          'province': 'ON',
+          'country': 'Canada'
+        }
       }
-    },
-    <String, dynamic>{
-      'id': '12666',
-      'name': 'Restuarant Name',
-      'type': 'Fast Food',
-      'image_url': 'restaurant.jpg',
-      'location': <String, double>{'longitude': 345.33, 'latitude': 345.23},
-      'address': <String, String>{
-        'street': 'Road 1',
-        'city': 'Toronto',
-        'province': 'ON',
-        'country': 'Canada'
-      }
-    }
-  ];
+    ]
+  };
 }
 
 dynamic _restaurantMenuJson() {
