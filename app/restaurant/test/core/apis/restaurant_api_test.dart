@@ -27,13 +27,17 @@ void main() {
       when(client.get(any, null)).thenAnswer(
         (_) async => HttpResult(
             data: jsonEncode(<String, dynamic>{
-              'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+              'metadata': <String, dynamic>{
+                'current_page': 1,
+                'total_pages': 2
+              },
               'restaurants': <dynamic>[]
             }),
             status: Status.success),
       );
 
-      final dynamic results = await api.getAllRestaurants(page: 1, pageSize: 2);
+      final dynamic results =
+          await api.getAllRestaurants(currentPage: 1, totalPages: 2);
       expect((results as PagedResult).restaurants, <dynamic>[]);
     });
 
@@ -45,7 +49,8 @@ void main() {
         ),
       );
 
-      final dynamic results = await api.getAllRestaurants(page: 1, pageSize: 2);
+      final dynamic results =
+          await api.getAllRestaurants(currentPage: 1, totalPages: 2);
       expect(results, isNull);
     });
 
@@ -57,7 +62,8 @@ void main() {
         ),
       );
 
-      final dynamic results = await api.getAllRestaurants(page: 1, pageSize: 2);
+      final dynamic results =
+          await api.getAllRestaurants(currentPage: 1, totalPages: 2);
       expect((results as PagedResult).restaurants.length, 2);
     });
   });
@@ -91,13 +97,13 @@ void main() {
     test('returns an empty list when no restaurants are found', () async {
       when(client.get(any, null)).thenAnswer((_) async => HttpResult(
           data: jsonEncode(<String, dynamic>{
-            'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+            'metadata': <String, dynamic>{'current_page': 1, 'total_pages': 2},
             'restaurants': <dynamic>[]
           }),
           status: Status.success));
       final dynamic results = await api.getRestaurantsByLocation(
-        page: 1,
-        pageSize: 2,
+        currentPage: 1,
+        totalPages: 2,
         location: const Location(longitude: 1233, latitude: 12.45),
       );
 
@@ -108,8 +114,8 @@ void main() {
       when(client.get(any, null)).thenAnswer((_) async => HttpResult(
           data: jsonEncode(_restaurantsJson()), status: Status.success));
       final dynamic results = await api.getRestaurantsByLocation(
-        page: 1,
-        pageSize: 2,
+        currentPage: 1,
+        totalPages: 2,
         location: const Location(longitude: 1233, latitude: 12.45),
       );
 
@@ -122,7 +128,7 @@ void main() {
       when(client.get(any, null)).thenAnswer(
         (_) async => HttpResult(
           data: jsonEncode(<String, dynamic>{
-            'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+            'metadata': <String, dynamic>{'current_page': 1, 'total_pages': 2},
             'restaurants': <dynamic>[]
           }),
           status: Status.success,
@@ -130,7 +136,7 @@ void main() {
       );
 
       final dynamic results = await api.findRestaurants(
-          page: 1, pageSize: 2, searchTerm: 'yucayic');
+          currentPage: 1, totalPages: 2, searchTerm: 'yucayic');
       expect((results as PagedResult).restaurants, <dynamic>[]);
     });
 
@@ -142,8 +148,8 @@ void main() {
         ),
       );
 
-      final dynamic results =
-          await api.findRestaurants(page: 1, pageSize: 2, searchTerm: 'tdud');
+      final dynamic results = await api.findRestaurants(
+          currentPage: 1, totalPages: 2, searchTerm: 'tdud');
 
       expect((results as PagedResult).restaurants.length, 2);
     });
@@ -182,7 +188,7 @@ void main() {
 
 dynamic _restaurantsJson() {
   return <String, dynamic>{
-    'metadata': <String, dynamic>{'page': 1, 'limit': 2},
+    'metadata': <String, dynamic>{'current_page': 1, 'total_pages': 2},
     'restaurants': <Map<String, dynamic>>[
       <String, dynamic>{
         'id': '12345',

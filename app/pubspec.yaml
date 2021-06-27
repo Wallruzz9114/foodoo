@@ -15,6 +15,9 @@ dependencies:
   auth:
     path: ./auth
 
+  restaurant:
+    path: ./restaurant
+
   cupertino_icons: ^1.0.2
   flutter_bloc: ^7.0.0
   equatable: ^2.0.3
@@ -26,6 +29,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  faker: ^2.0.0
 
 flutter:
   uses-material-design: true

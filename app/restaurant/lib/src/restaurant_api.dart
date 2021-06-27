@@ -15,9 +15,11 @@ class RestaurantAPI implements IRestaurantAPI {
   final String baseUrl;
 
   @override
-  Future<dynamic> getAllRestaurants(
-      {required int page, required int pageSize}) async {
-    final String endpoint = '$baseUrl/restaurants/page=$page';
+  Future<dynamic> getAllRestaurants({
+    required int currentPage,
+    required int totalPages,
+  }) async {
+    final String endpoint = '$baseUrl/restaurants/page=$currentPage';
     final HttpResult result = await client.get(endpoint, null);
 
     return _parseRestaurantResponse(result);
@@ -46,12 +48,12 @@ class RestaurantAPI implements IRestaurantAPI {
 
   @override
   Future<dynamic> getRestaurantsByLocation({
-    required int page,
-    required int pageSize,
+    required int currentPage,
+    required int totalPages,
     required Location location,
   }) async {
     final String endpoint =
-        '$baseUrl/restaurant/page=$page&longitude=${location.longitude}&latitude=${location.latitude}';
+        '$baseUrl/restaurant/page=$currentPage&longitude=${location.longitude}&latitude=${location.latitude}';
     final HttpResult result = await client.get(endpoint, null);
 
     return _parseRestaurantResponse(result);
@@ -59,12 +61,12 @@ class RestaurantAPI implements IRestaurantAPI {
 
   @override
   Future<dynamic> findRestaurants({
-    required int page,
-    required int pageSize,
+    required int currentPage,
+    required int totalPages,
     required String searchTerm,
   }) async {
     final String endpoint =
-        '$baseUrl/search/page=$page&limit=$pageSize&term=$searchTerm';
+        '$baseUrl/search/page=$currentPage&limit=$totalPages&term=$searchTerm';
     final HttpResult result = await client.get(endpoint, null);
 
     return _parseRestaurantResponse(result);
@@ -83,8 +85,8 @@ class RestaurantAPI implements IRestaurantAPI {
         : <String, dynamic>{};
 
     return PagedResult(
-      currentPage: json['metadata']['page'] as int,
-      pageSize: json['metadata']['limit'] as int,
+      currentPage: json['metadata']['current_page'] as int,
+      totalPages: json['metadata']['total_pages'] as int,
       restaurants: restaurants as List<Restaurant>,
     );
   }
