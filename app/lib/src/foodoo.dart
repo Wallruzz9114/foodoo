@@ -15,7 +15,7 @@ class Foodoo extends StatelessWidget {
         textTheme: GoogleFonts.montserratTextTheme(Theme.of(context).textTheme),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: CompositionRoot.composeAuthUI(),
+      home: CompositionRoot.composeRestaurantsListUI(),
     );
   }
 }

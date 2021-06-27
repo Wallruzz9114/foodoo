@@ -14,9 +14,10 @@ dependencies:
   
   auth:
     path: ./auth
-
   restaurant:
     path: ./restaurant
+  common:
+    path: ./common
 
   cupertino_icons: ^1.0.2
   flutter_bloc: ^7.0.0
@@ -25,6 +26,8 @@ dependencies:
   flutter_svg: ^0.22.0
   google_fonts: ^2.1.0
   shared_preferences: ^2.0.6
+  flutter_rating_bar: ^4.0.0
+  transparent_image: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -7,3 +7,4 @@ export './src/models/menu.dart';
 export './src/models/menu_item.dart';
 export './src/models/paged_result.dart';
 export './src/models/restaurant.dart';
+export './src/restaurant_api.dart';

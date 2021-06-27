@@ -5,19 +5,21 @@ class CustomTextField extends StatelessWidget {
     Key? key,
     required this.hint,
     required this.fontSize,
+    this.height = 54.0,
     required this.fontWeight,
     required this.onChanged,
   }) : super(key: key);
 
   final String hint;
   final double fontSize;
+  final double height;
   final FontWeight fontWeight;
   final Function(String value) onChanged;
 
   @override
   Container build(BuildContext context) {
     return Container(
-      height: 54.0,
+      height: height,
       child: TextField(
         onChanged: onChanged,
         cursorColor: Colors.black,
