@@ -41,13 +41,13 @@ class RestaurantCubit extends Cubit<RestaurantState> {
 
   Future<dynamic> search(int currentPage, String searchQuery) async {
     _startLoading();
-    final dynamic searchResults = _api.findRestaurants(
+    final PagedResult searchResults = await _api.findRestaurants(
       currentPage: currentPage,
       totalPages: _pageSize,
       searchTerm: searchQuery,
-    );
+    ) as PagedResult;
 
-    searchResults == null || (searchResults as PagedResult).restaurants.isEmpty
+    searchResults == null || searchResults.restaurants.isEmpty
         ? _showError('no restaurant found')
         : _setPageData(searchResults);
   }

@@ -28,7 +28,7 @@ class AuthErrorState extends AuthState {
   final String message;
 
   @override
-  List<Object?> get props => <Object>[];
+  List<Object> get props => <Object>[message];
 }
 
 class SignOutSuccessState extends AuthState {

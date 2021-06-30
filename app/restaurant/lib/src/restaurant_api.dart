@@ -69,7 +69,9 @@ class RestaurantAPI implements IRestaurantAPI {
         '$baseUrl/search/page=$currentPage&limit=$totalPages&term=$searchTerm';
     final HttpResult result = await client.get(endpoint, null);
 
-    return _parseRestaurantResponse(result);
+    final PagedResult lol = _parseRestaurantResponse(result) as PagedResult;
+
+    return lol;
   }
 
   dynamic _parseRestaurantResponse(HttpResult result) {

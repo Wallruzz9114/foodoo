@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -8,20 +9,26 @@ class CustomTextField extends StatelessWidget {
     this.height = 54.0,
     required this.fontWeight,
     required this.onChanged,
+    this.onSubmitted,
+    this.inputAction,
   }) : super(key: key);
 
   final String hint;
   final double fontSize;
   final double height;
   final FontWeight fontWeight;
-  final Function(String value) onChanged;
+  final Function(String) onChanged;
+  final Function(String)? onSubmitted;
+  final TextInputAction? inputAction;
 
   @override
   Container build(BuildContext context) {
     return Container(
       height: height,
       child: TextField(
+        onSubmitted: onSubmitted,
         onChanged: onChanged,
+        textInputAction: inputAction,
         cursorColor: Colors.black,
         style: Theme.of(context).textTheme.overline!.copyWith(
               color: Colors.black,

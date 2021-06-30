@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodoo/src/components/helpers.dart';
 import 'package:foodoo/src/components/restaurant/restaurant_list_item.dart';
 import 'package:foodoo/src/components/shared/custom_text_field.dart';
 import 'package:foodoo/src/models/custom_header.dart';
+import 'package:foodoo/src/screens/home/home_screen_adapter.dart';
+import 'package:foodoo/src/state/auth/auth_state.dart';
 import 'package:foodoo/src/state/helpers/custom_header_cubit.dart';
 import 'package:foodoo/src/state/restaurant/restaurant_cubit.dart';
 import 'package:foodoo/src/state/restaurant/restaurant_state.dart';
 import 'package:restaurant/restaurant.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class RestaurantsListScreen extends StatefulWidget {
-  const RestaurantsListScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key, required this.adapter}) : super(key: key);
+
+  final IHomeScreenAdapter adapter;
 
   @override
-  _RestaurantsListScreenState createState() => _RestaurantsListScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   RestaurantPageLoadedState? pageLoadedState;
   List<Restaurant> restaurants = <Restaurant>[];
   double currentIndex = 0;
@@ -74,6 +79,13 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
                 height: 48.0,
                 fontWeight: FontWeight.normal,
                 onChanged: (String value) {},
+                onSubmitted: (String query) {
+                  if (query.isEmpty) {
+                    return;
+                  }
+                  widget.adapter.onSearchQuery(context, query);
+                },
+                inputAction: TextInputAction.search,
               ),
             ),
           ),
@@ -90,19 +102,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
     );
   }
 
-  Container _bottomLoader() {
-    return Container(
-      alignment: Alignment.center,
-      child: const Center(
-        child: SizedBox(
-          width: 33.0,
-          height: 33.0,
-          child: CircularProgressIndicator(strokeWidth: 1.5),
-        ),
-      ),
-    );
-  }
-
   NotificationListener<ScrollEndNotification> _buildListOfRestaurants() {
     return NotificationListener<ScrollEndNotification>(
       onNotification: (_) {
@@ -115,7 +114,7 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
           return index >= restaurants.length
-              ? _bottomLoader()
+              ? bottomLoader()
               : RestaurantListItem(restaurant: restaurants[index]);
         },
         physics: const BouncingScrollPhysics(),
@@ -169,45 +168,49 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
         ],
       ),
       extendBodyBehindAppBar: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Align(child: _header(), alignment: Alignment.topCenter),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: FractionallySizedBox(
-              heightFactor: 0.75,
-              child: BlocConsumer<RestaurantCubit, RestaurantState>(
-                builder: (_, RestaurantState state) {
-                  if (state is RestaurantPageLoadedState) {
-                    pageLoadedState = state;
-                    restaurants.addAll(state.restaurants);
-                    _updateHeader();
-                  }
-                  if (pageLoadedState == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return _buildListOfRestaurants();
-                },
-                listener: (BuildContext context, RestaurantState state) {
-                  if (state is RestaurantErrorState) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          state.message,
-                          style: Theme.of(context)
-                              .textTheme
-                              .caption!
-                              .copyWith(color: Colors.white, fontSize: 16.0),
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Align(child: _header(), alignment: Alignment.topCenter),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: FractionallySizedBox(
+                heightFactor: 0.75,
+                child: BlocConsumer<RestaurantCubit, RestaurantState>(
+                  builder: (_, RestaurantState state) {
+                    if (state is RestaurantPageLoadedState) {
+                      pageLoadedState = state;
+                      restaurants.addAll(state.restaurants);
+                      _updateHeader();
+                    }
+                    if (pageLoadedState == null) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return _buildListOfRestaurants();
+                  },
+                  listener: (BuildContext context, dynamic state) {
+                    if (state is AuthErrorState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            state.message,
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(color: Colors.white, fontSize: 16.0),
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                },
+                      );
+                    }
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
