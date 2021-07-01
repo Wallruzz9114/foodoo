@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 Container bottomLoader() {
   return Container(
@@ -11,4 +12,10 @@ Container bottomLoader() {
       ),
     ),
   );
+}
+
+String doubleToCurrency(double value) {
+  final NumberFormat formatter =
+      NumberFormat.simpleCurrency(locale: 'en_US', decimalDigits: 2);
+  return formatter.format(value);
 }

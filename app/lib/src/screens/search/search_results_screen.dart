@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:foodoo/src/components/helpers.dart';
+import 'package:foodoo/src/screens/search/search_results_screen_adapter.dart';
 import 'package:foodoo/src/state/restaurant/restaurant_cubit.dart';
 import 'package:foodoo/src/state/restaurant/restaurant_state.dart';
 import 'package:restaurant/restaurant.dart';
@@ -12,10 +13,12 @@ class SearchResultsScreen extends StatefulWidget {
     Key? key,
     required this.restaurantCubit,
     required this.query,
+    required this.adapter,
   }) : super(key: key);
 
   final RestaurantCubit restaurantCubit;
   final String query;
+  final ISearchResultsScreenAdapter adapter;
 
   @override
   _SearchResultsScreenState createState() => _SearchResultsScreenState();
@@ -32,39 +35,47 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       itemBuilder: (BuildContext context, int index) {
         return index >= restaurants.length
             ? bottomLoader()
-            : ListTile(
-                leading: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: 'https://picsum.photos/id/292/300',
-                  height: 50.0,
-                  width: 50.0,
-                  fit: BoxFit.cover,
-                ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      restaurants[index].name,
-                      style: Theme.of(context).textTheme.subtitle1,
+            : Material(
+                child: InkWell(
+                  onTap: () => widget.adapter.onRestaurantSelected(
+                    context,
+                    restaurants[index],
+                  ),
+                  child: ListTile(
+                    leading: FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: 'https://picsum.photos/id/292/300',
+                      height: 50.0,
+                      width: 50.0,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          restaurants[index].name,
+                          style: Theme.of(context).textTheme.subtitle1,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        RatingBarIndicator(
+                          rating: 4.5,
+                          itemBuilder: (BuildContext context, int index) =>
+                              const Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                          ),
+                          itemSize: 25.0,
+                        ),
+                      ],
+                    ),
+                    subtitle: Text(
+                      '${restaurants[index].address.street}, ${restaurants[index].address.city}, ${restaurants[index].address.country}',
                       softWrap: true,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      overflow: TextOverflow.clip,
                     ),
-                    RatingBarIndicator(
-                      rating: 4.5,
-                      itemBuilder: (BuildContext context, int index) =>
-                          const Icon(
-                        Icons.star_rounded,
-                        color: Colors.amber,
-                      ),
-                      itemSize: 25.0,
-                    ),
-                  ],
-                ),
-                subtitle: Text(
-                  '${restaurants[index].address.street}, ${restaurants[index].address.city}, ${restaurants[index].address.country}',
-                  softWrap: true,
-                  maxLines: 2,
-                  overflow: TextOverflow.clip,
+                  ),
                 ),
               );
       },

@@ -6,10 +6,12 @@ class CustomButton extends StatelessWidget {
     required this.text,
     required this.size,
     required this.onPressed,
+    this.color,
   }) : super(key: key);
 
   final String text;
   final Size size;
+  final Color? color;
   final void Function() onPressed;
 
   @override
@@ -17,7 +19,7 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        primary: Colors.black,
+        primary: color ?? Colors.black,
         onPrimary: Theme.of(context).accentColor,
         elevation: 0,
         minimumSize: size,

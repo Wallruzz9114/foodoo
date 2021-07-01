@@ -115,7 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (BuildContext context, int index) {
           return index >= restaurants.length
               ? bottomLoader()
-              : RestaurantListItem(restaurant: restaurants[index]);
+              : GestureDetector(
+                  child: RestaurantListItem(restaurant: restaurants[index]),
+                  onTap: () => widget.adapter.onRestaurantSelected(
+                    context,
+                    restaurants[index],
+                  ),
+                );
         },
         physics: const BouncingScrollPhysics(),
         itemCount: pageLoadedState!.nextPage == null
