@@ -11,5 +11,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/auth', CompositionRoot.authRouter());
+app.use('/restaurants', CompositionRoot.restaurantRouter());
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));

@@ -7,7 +7,7 @@ export default class TokenService implements ITokenService {
   public encode(payload: string | object): string | object {
     const token = jwt.sign({ data: payload }, this._privateKey, {
       issuer: 'com.example.foodoo',
-      expiresIn: '1h',
+      expiresIn: '1y',
       algorithm: 'HS256',
     });
 

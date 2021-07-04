@@ -6,6 +6,8 @@ import RedisService from './auth/data/services/redisService';
 import TokenService from './auth/data/services/tokenService';
 import AuthRouter from './auth/entrypoints/authRouter';
 import TokenValidator from './auth/helpers/tokenValidator';
+import { RestaurantRepository } from './restaurant/data/repositories/restaurantRepository';
+import RestaurantRouter from './restaurant/entrypoints/restaurantRouter';
 
 export default class CompositionRoot {
   private static _client: mongoose.Mongoose;
@@ -37,5 +39,14 @@ export default class CompositionRoot {
       redisService,
       tokenValidator
     );
+  }
+
+  public static restaurantRouter() {
+    const restaurantRepository = new RestaurantRepository(this._client);
+    const tokenService = new TokenService(process.env.PRIVATE_KEY as string);
+    const redisService = new RedisService(this._redisClient);
+    const tokenValidator = new TokenValidator(tokenService, redisService);
+
+    return RestaurantRouter.configure(restaurantRepository, tokenValidator);
   }
 }

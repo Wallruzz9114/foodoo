@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import express from 'express';
 import redis from 'redis';
-import RedisService from 'src/auth/data/services/redisService';
 import request from 'supertest';
 import PasswordService from '../../../auth/data/services/passwordService';
+import RedisService from '../../../auth/data/services/redisService';
 import TokenService from '../../../auth/data/services/tokenService';
 import AuthRouter from '../../../auth/entrypoints/authRouter';
 import TokenValidator from '../../../auth/helpers/tokenValidator';
